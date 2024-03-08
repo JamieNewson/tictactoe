@@ -53,14 +53,15 @@ function Cell() {
 const GameController = (function () {
   const playerOneName = "Player 1";
   const playerTwoName = "Player 2";
+
   const players = [
     {
       name: playerOneName,
-      token: 1,
+      token: "X",
     },
     {
       name: playerTwoName,
-      token: 2,
+      token: "O",
     },
   ];
 
@@ -71,9 +72,7 @@ const GameController = (function () {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
 
-  const getActivePlayer = () => {
-    activePlayer;
-  };
+  const getActivePlayer = () => activePlayer;
 
   const playRound = (index) => {
     GameBoard.selectSquare(index, activePlayer.token);
@@ -86,9 +85,6 @@ const GameController = (function () {
   };
 
   const checkWinState = () => {
-    if (roundsPlayed >= 9) {
-      displayDraw();
-    }
     const cells = GameBoard.getCells();
     const combinations = [
       [0, 1, 2],
@@ -110,6 +106,9 @@ const GameController = (function () {
         return true;
       }
     }
+    if (roundsPlayed >= 9) {
+      displayDraw();
+    }
     return false;
   };
 
@@ -118,6 +117,7 @@ const GameController = (function () {
     roundsPlayed = 0;
     GameBoard.resetDisplay();
   };
+
   const displayDraw = () => {
     console.log("It's a draw!");
     roundsPlayed = 0;
@@ -127,12 +127,13 @@ const GameController = (function () {
   return { getActivePlayer, playRound };
 })();
 
-GameController.playRound(0);
-GameController.playRound(2);
-GameController.playRound(1);
-GameController.playRound(3);
-GameController.playRound(5);
-GameController.playRound(4);
-GameController.playRound(6);
-GameController.playRound(7);
-GameController.playRound(8);
+const DOMController = function () {
+  const cells = Array.from(document.querySelectorAll("li"));
+  for (cell of cells) {
+    cell.addEventListener("click", function (event) {
+      event.target.textContent = GameController.getActivePlayer().token;
+      GameController.playRound(cells.indexOf(event.target));
+    });
+  }
+};
+DOMController();
