@@ -1,13 +1,10 @@
 const GameBoard = (function () {
-  const rows = 3;
-  const columns = 3;
+  const totalCells = 9;
   const cells = [];
 
   const populateDisplay = () => {
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < columns; j++) {
-        cells.push(Cell());
-      }
+    for (let i = 0; i < totalCells; i++) {
+      cells.push(Cell());
     }
   };
 
@@ -20,7 +17,9 @@ const GameBoard = (function () {
     if (index > cells.length) return "oops!";
 
     const selection = cells[index];
-    if (selection.getState() === 0) selection.setState(player);
+    if (selection.getState() != 0) return;
+
+    selection.setState(player);
   };
 
   const printDisplay = () => {
@@ -78,8 +77,11 @@ const GameController = (function () {
     GameBoard.selectSquare(index, activePlayer.token);
     GameBoard.printDisplay();
     roundsPlayed++;
-    if (checkWinState()) displayVictory();
-    else {
+
+    if (checkWinState()) displayEndScreen(true);
+    else if (roundsPlayed >= 9) {
+      displayEndScreen(false);
+    } else {
       switchPlayerTurn();
     }
   };
@@ -102,38 +104,38 @@ const GameController = (function () {
         cells[comb[0]].getState() == cells[comb[1]].getState() &&
         cells[comb[1]].getState() == cells[comb[2]].getState() &&
         cells[comb[0]].getState() != 0
-      ) {
+      )
         return true;
-      }
-    }
-    if (roundsPlayed >= 9) {
-      displayDraw();
     }
     return false;
   };
 
-  const displayVictory = () => {
-    console.log(activePlayer.name + " won!");
+  const displayEndScreen = (winState) => {
+    if (winState) console.log(activePlayer.name + " won!");
+    else console.log("It's a draw!");
     roundsPlayed = 0;
     GameBoard.resetDisplay();
-  };
-
-  const displayDraw = () => {
-    console.log("It's a draw!");
-    roundsPlayed = 0;
-    GameBoard.resetDisplay();
+    DOMController.resetCellDisplay();
   };
 
   return { getActivePlayer, playRound };
 })();
 
-const DOMController = function () {
+const DOMController = (function () {
   const cells = Array.from(document.querySelectorAll("li"));
+
   for (cell of cells) {
     cell.addEventListener("click", function (event) {
-      event.target.textContent = GameController.getActivePlayer().token;
-      GameController.playRound(cells.indexOf(event.target));
+      let clickedCell = event.target;
+      if (clickedCell.textContent != "") return;
+      clickedCell.textContent = GameController.getActivePlayer().token;
+      GameController.playRound(cells.indexOf(clickedCell));
     });
   }
-};
-DOMController();
+
+  const resetCellDisplay = () => {
+    for (cell of cells) cell.textContent = "";
+  };
+
+  return { resetCellDisplay };
+})();
