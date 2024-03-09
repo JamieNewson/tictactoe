@@ -47,9 +47,42 @@ ul {
   background-color: rgb(0, 0, 0);
   border: 3px solid black;
   margin: auto;
+  margin-bottom: 20px;
   box-shadow: 1px 1px 10px rgb(72, 72, 72);
 }
 
 .container {
   margin: auto;
+}
+
+.playerDisplay {
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+  flex: 1;
+  justify-content: center;
+  width: 300px;
+  margin: auto;
+}
+
+.column {
+  width: 1fr;
+  padding: 8px 15px;
+  margin: 8px;
+  border: 1px rgb(225, 225, 225) solid;
+  border-radius: 5px;
+}
+
+.column > * {
+  color: rgb(225, 225, 225);
+}
+
+.column.selectedPlayer {
+  background-color: rgb(154, 206, 239);
+  box-shadow: 1px 1px 5px rgb(72, 72, 72);
+}
+
+.column.selectedPlayer > * {
+  color: rgb(255, 255, 255);
+  text-shadow: 0 0 3px rgb(87, 87, 87);
 }

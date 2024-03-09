@@ -65,6 +65,7 @@ const GameController = (function () {
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
+    DOMController.updatePlayerDisplay(players.indexOf(activePlayer));
   };
 
   const getActivePlayer = () => activePlayer;
@@ -77,9 +78,8 @@ const GameController = (function () {
     if (checkWinState()) displayEndScreen(true);
     else if (roundsPlayed >= 9) {
       displayEndScreen(false);
-    } else {
-      switchPlayerTurn();
     }
+    switchPlayerTurn();
   };
 
   const checkWinState = () => {
@@ -119,6 +119,7 @@ const GameController = (function () {
 
 const DOMController = (function () {
   const cells = Array.from(document.querySelectorAll("li"));
+  const playerDisplay = Array.from(document.getElementsByClassName("column"));
 
   for (cell of cells) {
     cell.addEventListener("click", function (event) {
@@ -130,6 +131,16 @@ const DOMController = (function () {
     });
   }
 
+  const updatePlayerDisplay = (activePlayer) => {
+    if (activePlayer === 0) {
+      playerDisplay[0].classList.add("selectedPlayer");
+      playerDisplay[1].classList.remove("selectedPlayer");
+    } else {
+      playerDisplay[1].classList.add("selectedPlayer");
+      playerDisplay[0].classList.remove("selectedPlayer");
+    }
+  };
+
   const resetCellDisplay = () => {
     for (cell of cells) {
       cell.textContent = "";
@@ -137,5 +148,5 @@ const DOMController = (function () {
     }
   };
 
-  return { resetCellDisplay };
+  return { resetCellDisplay, updatePlayerDisplay };
 })();
