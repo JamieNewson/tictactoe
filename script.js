@@ -3,14 +3,10 @@ const GameBoard = (function () {
   const cells = [];
 
   const populateDisplay = () => {
+    cells.length = 0;
     for (let i = 0; i < totalCells; i++) {
       cells.push(Cell());
     }
-  };
-
-  const resetDisplay = () => {
-    cells.length = 0;
-    populateDisplay();
   };
 
   const selectSquare = (index, player) => {
@@ -34,7 +30,7 @@ const GameBoard = (function () {
 
   populateDisplay();
 
-  return { selectSquare, getCells, printDisplay, resetDisplay };
+  return { selectSquare, getCells, printDisplay, populateDisplay };
 })();
 
 function Cell() {
@@ -114,7 +110,7 @@ const GameController = (function () {
     if (winState) console.log(activePlayer.name + " won!");
     else console.log("It's a draw!");
     roundsPlayed = 0;
-    GameBoard.resetDisplay();
+    GameBoard.populateDisplay();
     DOMController.resetCellDisplay();
   };
 
@@ -128,13 +124,17 @@ const DOMController = (function () {
     cell.addEventListener("click", function (event) {
       let clickedCell = event.target;
       if (clickedCell.textContent != "") return;
+      clickedCell.classList.add("selected");
       clickedCell.textContent = GameController.getActivePlayer().token;
       GameController.playRound(cells.indexOf(clickedCell));
     });
   }
 
   const resetCellDisplay = () => {
-    for (cell of cells) cell.textContent = "";
+    for (cell of cells) {
+      cell.textContent = "";
+      cell.classList.remove("selected");
+    }
   };
 
   return { resetCellDisplay };

@@ -3,6 +3,13 @@
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
+  color: white;
+}
+
+body {
+  text-align: center;
+  padding: 20px;
+  background-color: rgb(34, 34, 34);
 }
 
 h1 {
@@ -14,12 +21,20 @@ li {
   text-align: center;
   line-height: 96px;
   font-size: 3rem;
-  background-color: rgb(241, 241, 241);
+  background-color: rgb(180, 216, 239);
 }
 
 li:hover {
-  background-color: white;
+  background-color: rgb(205, 225, 238);
   cursor: pointer;
+}
+
+.selected {
+  background-color: rgb(154, 206, 239);
+}
+.selected:hover {
+  background-color: rgb(154, 206, 239);
+  cursor: default;
 }
 
 ul {
@@ -31,8 +46,10 @@ ul {
   margin-left: 20px;
   background-color: rgb(0, 0, 0);
   border: 3px solid black;
+  margin: auto;
+  box-shadow: 1px 1px 10px rgb(72, 72, 72);
 }
 
 .container {
-  margin: 20px;
+  margin: auto;
 }
