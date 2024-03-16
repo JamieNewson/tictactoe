@@ -75,9 +75,9 @@ const GameController = (function () {
     GameBoard.printDisplay();
     roundsPlayed++;
 
-    if (checkWinState()) displayEndScreen(true);
+    if (checkWinState()) displayEndScreen(activePlayer.name);
     else if (roundsPlayed >= 9) {
-      displayEndScreen(false);
+      displayEndScreen();
     }
     switchPlayerTurn();
   };
@@ -107,19 +107,25 @@ const GameController = (function () {
   };
 
   const displayEndScreen = (winState) => {
-    if (winState) console.log(activePlayer.name + " won!");
-    else console.log("It's a draw!");
+    DOMController.updateResultDisplay(winState);
     roundsPlayed = 0;
     GameBoard.populateDisplay();
     DOMController.resetCellDisplay();
   };
 
-  return { getActivePlayer, playRound };
+  const updatePlayerName = (name, index) => {
+    players[index].name = name;
+  };
+
+  return { getActivePlayer, playRound, updatePlayerName };
 })();
 
 const DOMController = (function () {
   const cells = Array.from(document.querySelectorAll("li"));
-  const playerDisplay = Array.from(document.getElementsByClassName("column"));
+  const playerDisplay = Array.from(document.querySelectorAll(".column"));
+  const playerNames = Array.from(document.querySelectorAll(".name"));
+  const resultDisplay = document.querySelector(".resultDisplay");
+  const resultText = resultDisplay.firstChild;
 
   for (cell of cells) {
     cell.addEventListener("click", (event) => {
@@ -142,6 +148,16 @@ const DOMController = (function () {
     });
   }
 
+  for (playerName of playerNames) {
+    playerName.addEventListener("click", (event) => {
+      var name = prompt("Please enter your name", "Name");
+      if (name != null && name != "") {
+        GameController.updatePlayerName(name, event.target.id);
+        event.target.textContent = name;
+      }
+    });
+  }
+
   const updatePlayerDisplay = (activePlayer) => {
     if (activePlayer === 0) {
       playerDisplay[0].classList.add("selectedPlayer");
@@ -152,6 +168,13 @@ const DOMController = (function () {
     }
   };
 
+  const updateResultDisplay = (winnerName) => {
+    let textToDisplay = "";
+    if (winnerName) textToDisplay = `${winnerName} has won!`;
+    else textToDisplay = "It's a draw!";
+    resultText.textContent = textToDisplay;
+  };
+
   const resetCellDisplay = () => {
     for (cell of cells) {
       cell.textContent = "";
@@ -159,5 +182,5 @@ const DOMController = (function () {
     }
   };
 
-  return { resetCellDisplay, updatePlayerDisplay };
+  return { resetCellDisplay, updatePlayerDisplay, updateResultDisplay };
 })();
