@@ -122,12 +122,23 @@ const DOMController = (function () {
   const playerDisplay = Array.from(document.getElementsByClassName("column"));
 
   for (cell of cells) {
-    cell.addEventListener("click", function (event) {
+    cell.addEventListener("click", (event) => {
       let clickedCell = event.target;
-      if (clickedCell.textContent != "") return;
+      if (clickedCell.textContent != GameController.getActivePlayer().token)
+        return;
       clickedCell.classList.add("selected");
       clickedCell.textContent = GameController.getActivePlayer().token;
       GameController.playRound(cells.indexOf(clickedCell));
+    });
+    cell.addEventListener("mouseenter", (event) => {
+      let hoveredCell = event.target;
+      if (hoveredCell.textContent != "") return;
+      hoveredCell.textContent = GameController.getActivePlayer().token;
+    });
+    cell.addEventListener("mouseout", (event) => {
+      let hoveredCell = event.target;
+      if (hoveredCell.classList.contains("selected")) return;
+      hoveredCell.textContent = "";
     });
   }
 
