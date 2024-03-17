@@ -23,7 +23,6 @@ const GameBoard = (function () {
     for (let cell of cells) {
       displayWithCellValues.push(cell.getState());
     }
-    console.log(displayWithCellValues);
   };
 
   const getCells = () => cells;
@@ -61,6 +60,7 @@ const GameController = (function () {
   ];
 
   let roundsPlayed = 0;
+  let isInPlay = true;
   let activePlayer = players[0];
 
   const switchPlayerTurn = () => {
@@ -71,6 +71,7 @@ const GameController = (function () {
   const getActivePlayer = () => activePlayer;
 
   const playRound = (index) => {
+    if (!isInPlay) return;
     GameBoard.selectSquare(index, activePlayer.token);
     GameBoard.printDisplay();
     roundsPlayed++;
@@ -107,17 +108,30 @@ const GameController = (function () {
   };
 
   const displayEndScreen = (winState) => {
+    isInPlay = false;
     DOMController.updateResultDisplay(winState);
+  };
+
+  const resetGame = () => {
     roundsPlayed = 0;
-    GameBoard.populateDisplay();
-    DOMController.resetCellDisplay();
+    isInPlay = true;
+  };
+
+  const getIsInPlay = () => {
+    return isInPlay;
   };
 
   const updatePlayerName = (name, index) => {
     players[index].name = name;
   };
 
-  return { getActivePlayer, playRound, updatePlayerName };
+  return {
+    getActivePlayer,
+    playRound,
+    updatePlayerName,
+    resetGame,
+    getIsInPlay,
+  };
 })();
 
 const DOMController = (function () {
@@ -126,17 +140,21 @@ const DOMController = (function () {
   const playerNames = Array.from(document.querySelectorAll(".name"));
   const resultDisplay = document.querySelector(".resultDisplay");
   const resultText = resultDisplay.firstChild;
+  const resetBtn = document.querySelector(".reset");
 
   for (cell of cells) {
     cell.addEventListener("click", (event) => {
       let clickedCell = event.target;
-      if (clickedCell.textContent != GameController.getActivePlayer().token)
+      if (
+        clickedCell.classList.contains("selected") ||
+        !GameController.getIsInPlay()
+      )
         return;
       clickedCell.classList.add("selected");
-      clickedCell.textContent = GameController.getActivePlayer().token;
       GameController.playRound(cells.indexOf(clickedCell));
     });
     cell.addEventListener("mouseenter", (event) => {
+      if (!GameController.getIsInPlay()) return;
       let hoveredCell = event.target;
       if (hoveredCell.textContent != "") return;
       hoveredCell.textContent = GameController.getActivePlayer().token;
@@ -158,6 +176,12 @@ const DOMController = (function () {
     });
   }
 
+  resetBtn.addEventListener("click", () => {
+    resetCellDisplay();
+    GameController.resetGame();
+    GameBoard.populateDisplay();
+  });
+
   const updatePlayerDisplay = (activePlayer) => {
     if (activePlayer === 0) {
       playerDisplay[0].classList.add("selectedPlayer");
@@ -173,9 +197,12 @@ const DOMController = (function () {
     if (winnerName) textToDisplay = `${winnerName} has won!`;
     else textToDisplay = "It's a draw!";
     resultText.textContent = textToDisplay;
+    resetBtn.style.display = "block";
   };
 
   const resetCellDisplay = () => {
+    resetBtn.style.display = "none";
+    resultText.textContent = "It's all to play for!";
     for (cell of cells) {
       cell.textContent = "";
       cell.classList.remove("selected");

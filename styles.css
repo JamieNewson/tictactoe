@@ -24,6 +24,7 @@ li {
   background-color: rgb(180, 216, 239);
 }
 
+.reset:hover,
 li:hover {
   background-color: rgb(205, 225, 238);
   cursor: pointer;
@@ -44,11 +45,9 @@ ul {
   gap: 3px;
   width: 300px;
   height: 300px;
-  margin-left: 20px;
   background-color: rgb(0, 0, 0);
   border: 3px solid black;
-  margin: auto;
-  margin-bottom: 20px;
+  margin: 20px auto;
   box-shadow: 1px 1px 10px rgb(72, 72, 72);
 }
 
@@ -58,20 +57,26 @@ ul {
 
 .playerDisplay {
   display: flex;
-  flex-wrap: wrap;
-  flex-grow: 1;
+  flex-wrap: nowrap;
   flex-basis: 100%;
   justify-content: space-around;
   width: 300px;
   margin: auto;
 }
 
-.column {
-  width: 1fr;
+.btn {
   padding: 8px 15px;
   border: 1px rgb(225, 225, 225) solid;
   border-radius: 5px;
   transition: 500ms;
+  margin: auto 5px;
+}
+
+.column {
+  max-width: 200px;
+  min-width: 100px;
+  flex-shrink: 0;
+  overflow: scroll;
 }
 
 .column > * {
@@ -87,4 +92,14 @@ ul {
 .column.selectedPlayer > * {
   color: rgb(255, 255, 255);
   text-shadow: 0 0 3px rgb(87, 87, 87);
+}
+
+.resultDisplay {
+  margin: 20px;
+}
+
+.reset {
+  display: none;
+  margin: auto;
+  width: 150px;
 }
