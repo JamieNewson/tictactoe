@@ -24,7 +24,6 @@ li {
   background-color: rgb(180, 216, 239);
 }
 
-.reset:hover,
 li:hover {
   background-color: rgb(205, 225, 238);
   cursor: pointer;
@@ -72,6 +71,14 @@ ul {
   margin: auto 5px;
 }
 
+.btn > * {
+  cursor: default;
+}
+
+.btn > h2 {
+  cursor: pointer;
+}
+
 .column {
   max-width: 200px;
   min-width: 100px;
@@ -102,4 +109,10 @@ ul {
   display: none;
   margin: auto;
   width: 150px;
+}
+
+.reset:hover {
+  transform: scale(1.05);
+  background-color: rgb(150, 185, 208);
+  cursor: pointer;
 }

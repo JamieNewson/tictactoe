@@ -9,13 +9,13 @@ const GameBoard = (function () {
     }
   };
 
-  const selectSquare = (index, player) => {
-    if (index > cells.length) return "oops!";
+  const selectSquare = (input) => {
+    if (input.index > cells.length) return "oops!";
 
-    const selection = cells[index];
+    const selection = cells[input.index];
     if (selection.getState() != 0) return;
 
-    selection.setState(player);
+    selection.setState(input.token);
   };
 
   const printDisplay = () => {
@@ -29,7 +29,11 @@ const GameBoard = (function () {
 
   populateDisplay();
 
-  return { selectSquare, getCells, printDisplay, populateDisplay };
+  events.on("resetBoard", populateDisplay);
+  events.on("roundPlayed", selectSquare);
+  events.on("roundPlayed", printDisplay);
+
+  return { getCells };
 })();
 
 function Cell() {
@@ -72,8 +76,7 @@ const GameController = (function () {
 
   const playRound = (index) => {
     if (!isInPlay) return;
-    GameBoard.selectSquare(index, activePlayer.token);
-    GameBoard.printDisplay();
+    events.emit("roundPlayed", { index: index, token: activePlayer.token });
     roundsPlayed++;
 
     if (checkWinState()) displayEndScreen(activePlayer.name);
@@ -125,11 +128,12 @@ const GameController = (function () {
     players[index].name = name;
   };
 
+  events.on("resetBoard", resetGame);
+
   return {
     getActivePlayer,
     playRound,
     updatePlayerName,
-    resetGame,
     getIsInPlay,
   };
 })();
@@ -177,9 +181,7 @@ const DOMController = (function () {
   }
 
   resetBtn.addEventListener("click", () => {
-    resetCellDisplay();
-    GameController.resetGame();
-    GameBoard.populateDisplay();
+    events.emit("resetBoard");
   });
 
   const updatePlayerDisplay = (activePlayer) => {
@@ -209,5 +211,7 @@ const DOMController = (function () {
     }
   };
 
-  return { resetCellDisplay, updatePlayerDisplay, updateResultDisplay };
+  events.on("resetBoard", resetCellDisplay);
+
+  return { updatePlayerDisplay, updateResultDisplay };
 })();
